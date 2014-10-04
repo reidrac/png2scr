@@ -90,7 +90,9 @@ def main():
             for j in range(8):
                 row = 0
                 for i in range(8):
-                    if data[x + i + (j + y) * w] != COLORS[0]:
+                    if not attr:
+                        attr.append(data[x + i + (j + y) * w])
+                    if data[x + i + (j + y) * w] != attr[0]:
                         row |= 1 << (7 - i)
                     if data[x + i + (j + y) * w] not in attr:
                         attr.append(data[x + i + (j + y) * w])
@@ -101,11 +103,8 @@ def main():
             elif len(attr) < 2:
                 attr.append(COLORS[0])
 
-            if attr[0] == COLORS[0] and attr[1] != COLORS[0]:
-                attr[0], attr[1] = attr[1], attr[0]
-
             pixels.extend(byte)
-            attrib.append(C2P[attr[1]] | C2I[attr[0]])
+            attrib.append(C2P[attr[0]] | C2I[attr[1]])
 
     interlaced = []
     for block in range(3):
