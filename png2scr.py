@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 png2scr.py
-Copyright (C) 2014 by Juan J. Martinez - usebox.net
+Copyright (C) 2014-2016 by Juan J. Martinez - usebox.net
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 """
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from argparse import ArgumentParser
 from PIL import Image
@@ -53,7 +53,7 @@ BASE = 128
 def main():
 
     parser = ArgumentParser(description="PNG to Spectrum SCR converter",
-                            epilog="Copyright (C) 2014 Juan J Martinez <jjm@usebox.net>",
+                            epilog="Copyright (C) 2014-2016 Juan J Martinez <jjm@usebox.net>",
                             )
 
     parser.add_argument("--version", action="version", version="%(prog)s "  + __version__)
@@ -100,8 +100,12 @@ def main():
 
             if len(attr) > 2:
                 parser.error("more than 2 colors in an attribute block in (%d, %d)" % (x, y))
-            elif len(attr) < 2:
+            elif len(attr) != 2:
                 attr.append(COLORS[0])
+
+            if C2P[attr[0]] > C2I[attr[1]]:
+                attr[0], attr[1] = attr[1], attr[0]
+                byte = [~b & 0xff for b in byte]
 
             pixels.extend(byte)
             attrib.append(C2P[attr[0]] | C2I[attr[1]])
