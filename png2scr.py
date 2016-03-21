@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 """
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 from argparse import ArgumentParser
 from PIL import Image
@@ -101,14 +101,23 @@ def main():
             if len(attr) > 2:
                 parser.error("more than 2 colors in an attribute block in (%d, %d)" % (x, y))
             elif len(attr) != 2:
-                attr.append(COLORS[0])
+                # if only one colour, try to find a match in an adjacent cell
+                if attrib:
+                    prev_attr = attrib[-1]
+                    if prev_attr[0] == attr[0]:
+                        attr.append(prev_attr[1])
+                if len(attr) != 2:
+                    attr.append(COLORS[0])
 
+            # improve compression ratio
             if C2P[attr[0]] > C2I[attr[1]]:
                 attr[0], attr[1] = attr[1], attr[0]
                 byte = [~b & 0xff for b in byte]
 
             pixels.extend(byte)
-            attrib.append(C2P[attr[0]] | C2I[attr[1]])
+            attrib.append(attr)
+
+    attrib = [(C2P[attr[0]] | C2I[attr[1]]) for attr in attrib]
 
     interlaced = []
     for block in range(3):
