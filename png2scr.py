@@ -27,28 +27,29 @@ __version__ = "1.0.3"
 from argparse import ArgumentParser
 from PIL import Image
 
-COLORS = ( (0, 0, 0),
-           (0, 0, 205), (0, 0, 255),
-           (205, 0, 0), (255, 0, 0),
-           (205, 0, 205), (255, 0, 255),
-           (0, 205, 0), (0, 255, 0),
-           (0, 205, 205), (0, 255, 255),
-           (205, 205, 0), (255, 255, 0),
-           (205, 205, 205), (255, 255, 255),
-           )
+COLORS = ((0, 0, 0),
+          (0, 0, 205), (0, 0, 255),
+          (205, 0, 0), (255, 0, 0),
+          (205, 0, 205), (255, 0, 255),
+          (0, 205, 0), (0, 255, 0),
+          (0, 205, 205), (0, 255, 255),
+          (205, 205, 0), (255, 255, 0),
+          (205, 205, 205), (255, 255, 255),
+          )
 
-ATTR_I = ( 0x00, 0x01, 0x01 | 0x40, 0x02, 0x02 | 0x40,
-           0x03, 0x03 | 0x40, 0x04, 0x04 | 0x40, 0x05, 0x05 | 0x40,
-           0x06, 0x06 | 0x40, 0x07, 0x07 | 0x40,)
+ATTR_I = (0x00, 0x01, 0x01 | 0x40, 0x02, 0x02 | 0x40,
+          0x03, 0x03 | 0x40, 0x04, 0x04 | 0x40, 0x05, 0x05 | 0x40,
+          0x06, 0x06 | 0x40, 0x07, 0x07 | 0x40,)
 
-ATTR_P = ( 0x00, 0x08, 0x08 | 0x40, 0x10, 0x10 | 0x40,
-           0x18, 0x18 | 0x40, 0x20, 0x20 | 0x40, 0x28, 0x28 | 0x40,
-           0x30, 0x30 | 0x40, 0x38, 0x38 | 0x40,)
+ATTR_P = (0x00, 0x08, 0x08 | 0x40, 0x10, 0x10 | 0x40,
+          0x18, 0x18 | 0x40, 0x20, 0x20 | 0x40, 0x28, 0x28 | 0x40,
+          0x30, 0x30 | 0x40, 0x38, 0x38 | 0x40,)
 
 C2I = dict(zip(COLORS, ATTR_I))
 C2P = dict(zip(COLORS, ATTR_P))
 
 BASE = 128
+
 
 def main():
 
@@ -56,7 +57,8 @@ def main():
                             epilog="Copyright (C) 2014-2016 Juan J Martinez <jjm@usebox.net>",
                             )
 
-    parser.add_argument("--version", action="version", version="%(prog)s "  + __version__)
+    parser.add_argument("--version", action="version",
+                        version="%(prog)s " + __version__)
     parser.add_argument("image", help="image to convert")
 
     args = parser.parse_args()
@@ -68,14 +70,15 @@ def main():
 
     (w, h) = image.size
 
-    if w != 256 or h !=  192:
+    if w != 256 or h != 192:
         parser.error("image size must be 256x192")
 
     if not isinstance(image.getpixel((0, 0)), tuple):
-        parse.error("only RGB(A) images are supported")
+        parser.error("only RGB(A) images are supported")
 
     # so we support both RGB and RGBA images
-    data = list(zip(list(image.getdata(0)), list(image.getdata(1)), list(image.getdata(2))))
+    data = list(zip(list(image.getdata(0)), list(
+        image.getdata(1)), list(image.getdata(2))))
 
     for c in data:
         if c not in COLORS:
@@ -99,7 +102,8 @@ def main():
                 byte.append(row)
 
             if len(attr) > 2:
-                parser.error("more than 2 colors in an attribute block in (%d, %d)" % (x, y))
+                parser.error(
+                    "more than 2 colors in an attribute block in (%d, %d)" % (x, y))
             elif len(attr) != 2:
                 # if only one colour, try to find a match in an adjacent cell
                 if attrib:
@@ -124,10 +128,10 @@ def main():
         for col in range(8):
             for row in range(8):
                 for line in range(32):
-                    interlaced.append(pixels[block * 8 * 8 * 32 \
-                            + row * 32 * 8 \
-                            + line * 8 \
-                            + col])
+                    interlaced.append(pixels[block * 8 * 8 * 32
+                                             + row * 32 * 8
+                                             + line * 8
+                                             + col])
 
     output = args.image + ".scr"
 
@@ -137,6 +141,6 @@ def main():
 
     print("%r created" % output)
 
+
 if __name__ == "__main__":
     main()
-
